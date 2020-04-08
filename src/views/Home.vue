@@ -36,13 +36,48 @@
       <hr />
     </div>
     <div v-bind:key="contact.id" v-for="contact in contacts">
-      <li>Name: {{ contact.name}}</li>
+      <li>{{contact.id}} {{ contact.name}}</li>
       <p>Email: {{ contact.email}}</p>
       <p>Phone Number: {{ contact.phone_number}}</p>
       <button v-on:click="showContact(contact)">Show info</button>
+      <button v-on:click="deleteContact(contact)">Delete Contact</button>
       <div v-if="currentContact === contact">
+        <p>First Name: {{contact.first_name}}</p>
+        <p>Middle Name: {{contact.middle_name}}</p>
+        <p>Last Name: {{contact.last_name}}</p>
         <p>Bio: {{contact.bio}}</p>
         <p>Address: {{contact.address}}</p>
+        <div>
+          <p>
+            First Name:
+            <input type="text" v-model="contact.first_name" />
+          </p>
+          <p>
+            Middle Name:
+            <input type="text" v-model="contact.middle_name" />
+          </p>
+          <p>
+            Last Name:
+            <input type="text" v-model="contact.last_name" />
+          </p>
+          <p>
+            Email:
+            <input type="text" v-model="contact.email" />
+          </p>
+          <p>
+            Phone Number:
+            <input type="text" v-model="contact.phone_number" />
+          </p>
+          <p>
+            Bio:
+            <input type="text" v-model="contact.bio" />
+          </p>
+          <p>
+            Address:
+            <input type="text" v-model="contact.address" />
+          </p>
+          <button v-on:click="updateContact(contact)">Update info</button>
+        </div>
       </div>
       <hr />
     </div>
@@ -101,6 +136,30 @@ export default {
     },
     showContact: function(theContact) {
       this.currentContact = theContact;
+    },
+    updateContact: function(theContact) {
+      console.log("Updating contact info...");
+      let params = {
+        first_name: theContact.first_name,
+        middle_name: theContact.first_name,
+        last_name: theContact.middle_name,
+        email: theContact.last_name,
+        phone_number: theContact.phone_number,
+        bio: theContact.bio,
+        address: theContact.address,
+      };
+      axios.patch("/api/contacts/" + theContact.id, params).then(response => {
+        console.log(response.data);
+        theContact = response.data;
+      });
+    },
+    deleteContact: function(theContact) {
+      let index = this.contacts.indexOf(theContact.id);
+      axios.delete("/api/contacts/" + theContact.id).then(response => {
+        console.log("Deleting contact...");
+        let index = this.contacts.indexOf(theContact.id);
+        this.contacts.splice(index, 1);
+      });
     },
   },
 };
